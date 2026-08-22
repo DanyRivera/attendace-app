@@ -1,0 +1,1 @@
+select public.close_expired_attendance_periods();

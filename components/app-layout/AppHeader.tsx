@@ -1,3 +1,5 @@
+import { logout } from "@/actions/auth";
+
 type AppHeaderProps = {
   companyName?: string;
   userName?: string;
@@ -7,6 +9,7 @@ export default function AppHeader({
   companyName = "Mi empresa",
   userName,
 }: AppHeaderProps) {
+
   const initial = userName?.trim().charAt(0).toUpperCase() || "U";
 
   return (
@@ -44,16 +47,29 @@ export default function AppHeader({
             {initial}
           </div>
 
-          <button
-            aria-label="Cerrar sesion"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-foreground/35 transition hover:bg-danger/10 hover:text-danger"
-            title="Cerrar sesion"
-            type="button"
-          >
-            <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24">
-              <path d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4M14 8l4 4-4 4M9 12h9" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
-            </svg>
-          </button>
+          <form action={logout}>
+            <button
+              aria-label="Cerrar sesion"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-foreground/35 transition hover:bg-danger/10 hover:text-danger"
+              title="Cerrar sesion"
+              type="submit"
+            >
+              <svg
+                aria-hidden="true"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4M14 8l4 4-4 4M9 12h9"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.8"
+                />
+              </svg>
+            </button>
+          </form>
         </div>
       </div>
     </header>

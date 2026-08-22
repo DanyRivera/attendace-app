@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import type { LoginFormData } from "@/types/login";
+import { redirect } from "next/navigation";
 
 export const login = async (data: LoginFormData) => {
 
@@ -58,7 +59,7 @@ export const getUser = async () => {
 
     const { data: company, error: companyError } = await supabase
         .from("companies")
-        .select("id, name, code")
+        .select("id, name, code, phone, direction")
         .eq("id", profile.company)
         .single();
 
@@ -85,4 +86,15 @@ export const getUser = async () => {
         phone: profile.phone,
         company
     };
+}
+
+export const logout = async () => {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+        throw new Error("No se pudo cerrar la sesion");
+    }
+
+    redirect("/login");
 }

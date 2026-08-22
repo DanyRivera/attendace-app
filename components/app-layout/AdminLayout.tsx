@@ -5,7 +5,7 @@ import BottomNav, {
 
 const adminNavItems: BottomNavItem[] = [
   { href: "/dashboard", icon: "dashboard", label: "Dashboard" },
-  { href: "/employees", icon: "people", label: "Empleados" },
+  { href: "/workers", icon: "people", label: "Empleados" },
   { href: "/pay", icon: "pay", label: "Pagar" },
   { href: "/profile", icon: "profile", label: "Perfil" },
 ];
