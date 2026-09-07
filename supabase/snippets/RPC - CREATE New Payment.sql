@@ -222,7 +222,7 @@ begin
       and days.company_id = v_admin_company_id
       and days.is_paid = false
       and days.paid_at is null
-      and days.work_date < v_today
+      and days.work_date <= v_today
       and period_totals.open_periods = 0
       and period_totals.closed_periods > 0
       and period_totals.worked_minutes > 0

@@ -11,6 +11,7 @@ import { registerCompanyWorkerPayment } from "@/actions/payments";
 type PaymentCalculatorProps = {
   worker: CompanyWorkerData;
   days: PendingPaymentDay[];
+  todayKey: string;
 };
 
 const currencyFormatter = new Intl.NumberFormat("es-MX", {
@@ -23,6 +24,7 @@ const currencyFormatter = new Intl.NumberFormat("es-MX", {
 export default function PaymentCalculator({
   worker,
   days,
+  todayKey,
 }: PaymentCalculatorProps) {
   const [selectedDayIds, setSelectedDayIds] = useState<Set<string>>(
     () => new Set(),
@@ -51,8 +53,7 @@ export default function PaymentCalculator({
           {worker.name} no tiene jornadas pendientes
         </h2>
         <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-foreground/45">
-          Sus jornadas cerradas y anteriores al día de hoy ya están pagadas o
-          todavía no existen.
+          Sus jornadas cerradas ya están pagadas o todavía no existen.
         </p>
       </div>
     );
@@ -61,6 +62,7 @@ export default function PaymentCalculator({
   const selectedDays = days.filter((day) => selectedDayIds.has(day.day_id));
   const selectedMinutes = selectedDays.reduce((total, day) => total + day.worked_minutes, 0,);
   const selectedAmount = selectedDays.reduce((total, day) => total + day.estimated_amount, 0,);
+  const includesToday = selectedDays.some((day) => day.work_date === todayKey);
   const allDaysSelected = selectedDayIds.size === days.length;
   const hourlySalary = days[0].hourly_salary;
 
@@ -94,10 +96,13 @@ export default function PaymentCalculator({
       selectedDays.length === 1
         ? "1 jornada"
         : `${selectedDays.length} jornadas`;
+    const currentDayWarning = includesToday
+      ? " Incluiste la jornada de hoy; después de registrar el pago, el colaborador no podrá registrar más entradas durante este día."
+      : "";
 
     const confirmation = await Swal.fire({
       title: "Confirmar pago",
-      text: `Registrarás ${currencyFormatter.format(selectedAmount)} para ${fullName}, correspondiente a ${dayLabel} y ${formatWorkedTime(selectedMinutes)}. Esta acción marcará las jornadas como pagadas y será irreversible.`,
+      text: `Registrarás ${currencyFormatter.format(selectedAmount)} para ${fullName}, correspondiente a ${dayLabel} y ${formatWorkedTime(selectedMinutes)}. Esta acción marcará las jornadas como pagadas y será irreversible.${currentDayWarning}`,
       icon: "warning",
       iconColor: "var(--secondary)",
       showCancelButton: true,
@@ -115,10 +120,9 @@ export default function PaymentCalculator({
       return;
     }
 
-    // Conecta aquí registerCompanyWorkerPayment.
     const res = await registerCompanyWorkerPayment({
       worker_id: worker.id,
-      day_ids: Array.from(selectedDayIds)
+      day_ids: Array.from(selectedDayIds),
     });
 
     if (!res.success) {
@@ -126,10 +130,8 @@ export default function PaymentCalculator({
       return;
     }
 
-    // Pago registrado correctamente.
     setSelectedDayIds(new Set());
     toast.success(res.message);
-
   };
 
   return (
@@ -204,9 +206,16 @@ export default function PaymentCalculator({
                 </span>
 
                 <span className="min-w-0">
-                  <strong className="block text-sm font-bold leading-6 text-foreground sm:text-base">
-                    {formatDate(date)}
-                  </strong>
+                  <span className="flex flex-wrap items-center gap-2">
+                    <strong className="text-sm font-bold leading-6 text-foreground sm:text-base">
+                      {formatDate(date)}
+                    </strong>
+                    {day.work_date === todayKey ? (
+                      <span className="rounded-full bg-secondary/12 px-2 py-0.5 text-[0.6rem] font-bold uppercase tracking-[0.1em] text-secondary ring-1 ring-secondary/20">
+                        Hoy
+                      </span>
+                    ) : null}
+                  </span>
                   <span className="mt-1 block text-xs font-medium text-foreground/40">
                     {formatWorkedTime(day.worked_minutes)} trabajadas
                   </span>

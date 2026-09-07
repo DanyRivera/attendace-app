@@ -2,6 +2,7 @@ import { getCompanyWorkerPaymentDays } from "@/actions/payments";
 import { getWorkers } from "@/actions/worker";
 import PaymentCalculator from "@/components/pay/PaymentCalculator";
 import WorkerSelector from "@/components/workers/WorkerSelector";
+import { formatDate } from "@/lib/date";
 
 type PayProps = {
   searchParams: Promise<{
@@ -28,6 +29,7 @@ export default async function Pay({ searchParams }: PayProps) {
   }
 
   const pendingDays = pendingDaysResult?.data ?? [];
+  const todayKey = formatDate(new Date(), "key");
 
   return (
     <section className="relative mx-auto w-full max-w-6xl pb-4">
@@ -96,6 +98,7 @@ export default async function Pay({ searchParams }: PayProps) {
               <PaymentCalculator
                 days={pendingDays}
                 key={selectedWorker.id}
+                todayKey={todayKey}
                 worker={selectedWorker}
               />
             ) : (

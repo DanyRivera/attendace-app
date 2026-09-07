@@ -1,4 +1,4 @@
--- Devuelve las jornadas cerradas y no pagadas de un colaborador, junto con sus minutos trabajados y el importe estimado usando su sueldo actual por hora. Excluye siempre el día actual.
+-- Devuelve hasta el día actual las jornadas cerradas y no pagadas de un colaborador, junto con sus minutos trabajados y el importe estimado usando su sueldo actual por hora.
 
 begin;
 
@@ -110,7 +110,7 @@ begin
   v_now := clock_timestamp();
   v_work_date := (v_now at time zone v_time_zone)::date;
 
-  -- Devuelve únicamente jornadas completas, anteriores a hoy y no pagadas.
+  -- Devuelve únicamente jornadas completas, hasta hoy y no pagadas.
   return query
   select
     days.id as day_id,
@@ -158,7 +158,7 @@ begin
   where days.user_id = p_worker_id
     and days.company_id = v_admin_company_id
     and days.is_paid = false
-    and days.work_date < v_work_date
+    and days.work_date <= v_work_date
     and period_totals.open_periods = 0
     and period_totals.closed_periods > 0
     and period_totals.worked_minutes > 0
