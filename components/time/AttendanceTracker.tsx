@@ -9,6 +9,7 @@ import {
   formatTimeText,
   formatWorkedTime,
 } from "@/lib/date";
+import { logout } from "@/actions/auth";
 import { registerTime } from '@/actions/worker';
 import { useRouter } from 'next/navigation';
 import type { TodayAttendanceData } from '@/types/time';
@@ -165,8 +166,6 @@ export default function AttendanceTracker({ attendance }: AttendanceTrackerProps
 
         const registeredAction = res.action;
 
-        router.refresh();
-
         await Swal.fire({
           title:
             registeredAction === "clock_in"
@@ -174,10 +173,24 @@ export default function AttendanceTracker({ attendance }: AttendanceTrackerProps
               : "Salida registrada",
           text:
             registeredAction === "clock_in"
-              ? "Tu hora de entrada fue registrada correctamente."
-              : "Tu hora de salida fue registrada correctamente.",
+              ? "Tu hora de entrada fue registrada correctamente. La sesión se cerrará en 5 segundos."
+              : "Tu hora de salida fue registrada correctamente. La sesión se cerrará en 5 segundos.",
           icon: "success",
+          timer: 5000,
+          timerProgressBar: true,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          allowEscapeKey: false,
         });
+
+        try {
+          await logout();
+        } catch (error) {
+          console.error(error);
+          toast.error(
+            "La asistencia fue registrada, pero no se pudo cerrar la sesión.",
+          );
+        }
       } catch (error) {
         console.log(error);
         toast.error("Ocurrio un error inesperado. Intenta nuevamente.");
