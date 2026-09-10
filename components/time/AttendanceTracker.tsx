@@ -155,48 +155,43 @@ export default function AttendanceTracker({ attendance }: AttendanceTrackerProps
       color: "var(--foreground)",
     });
 
-    if (result.isConfirmed) {
-      try {
-        const res = await registerTime();
-
-        if (!res.success) {
-          toast.error(`${res.message} : ${res.code}`);
-          return
-        }
-
-        const registeredAction = res.action;
-
-        await Swal.fire({
-          title:
-            registeredAction === "clock_in"
-              ? "Entrada registrada"
-              : "Salida registrada",
-          text:
-            registeredAction === "clock_in"
-              ? "Tu hora de entrada fue registrada correctamente. La sesión se cerrará en 5 segundos."
-              : "Tu hora de salida fue registrada correctamente. La sesión se cerrará en 5 segundos.",
-          icon: "success",
-          timer: 5000,
-          timerProgressBar: true,
-          showConfirmButton: false,
-          allowOutsideClick: false,
-          allowEscapeKey: false,
-        });
-
-        try {
-          await logout();
-        } catch (error) {
-          console.error(error);
-          toast.error(
-            "La asistencia fue registrada, pero no se pudo cerrar la sesión.",
-          );
-        }
-      } catch (error) {
-        console.log(error);
-        toast.error("Ocurrio un error inesperado. Intenta nuevamente.");
-      }
+    if (!result.isConfirmed) {
+      return;
     }
 
+    try {
+      const res = await registerTime();
+
+      if (!res.success) {
+        toast.error(`${res.message} : ${res.code}`);
+        return;
+      }
+
+      const registeredAction = res.action;
+
+      await Swal.fire({
+        title:
+          registeredAction === "clock_in"
+            ? "Entrada registrada"
+            : "Salida registrada",
+        text:
+          registeredAction === "clock_in"
+            ? "Tu hora de entrada fue registrada correctamente. La sesión se cerrará en 5 segundos."
+            : "Tu hora de salida fue registrada correctamente. La sesión se cerrará en 5 segundos.",
+        icon: "success",
+        timer: 5000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+      });
+    } catch (error) {
+      console.log(error);
+      toast.error("Ocurrio un error inesperado. Intenta nuevamente.");
+      return;
+    }
+
+    await logout();
   };
 
   return (
