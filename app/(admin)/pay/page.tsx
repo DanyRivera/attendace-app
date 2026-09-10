@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getCompanyWorkerPaymentDays } from "@/actions/payments";
 import { getWorkers } from "@/actions/worker";
 import PaymentCalculator from "@/components/pay/PaymentCalculator";
@@ -21,8 +22,13 @@ export default async function Pay({ searchParams }: PayProps) {
   const query = await searchParams;
   const requestedWorkerId =typeof query.worker === "string" ? query.worker : undefined;
   const selectedWorker = workers.find((worker) => worker.id === requestedWorkerId) ?? null;
+  const hasValidSalary = selectedWorker
+    ? Number.isFinite(selectedWorker.salary) && selectedWorker.salary > 0
+    : false;
 
-  const pendingDaysResult = selectedWorker ? await getCompanyWorkerPaymentDays(selectedWorker.id) : null;
+  const pendingDaysResult = selectedWorker && hasValidSalary
+    ? await getCompanyWorkerPaymentDays(selectedWorker.id)
+    : null;
 
   if (pendingDaysResult && !pendingDaysResult.success) {
     throw new Error(pendingDaysResult.message);
@@ -95,12 +101,60 @@ export default async function Pay({ searchParams }: PayProps) {
 
           <div className="relative mt-8 sm:mt-10">
             {selectedWorker ? (
-              <PaymentCalculator
-                days={pendingDays}
-                key={selectedWorker.id}
-                todayKey={todayKey}
-                worker={selectedWorker}
-              />
+              hasValidSalary ? (
+                <PaymentCalculator
+                  days={pendingDays}
+                  key={selectedWorker.id}
+                  todayKey={todayKey}
+                  worker={selectedWorker}
+                />
+              ) : (
+                <div className="rounded-3xl border border-secondary/15 bg-white/85 px-6 py-12 text-center shadow-[0_12px_35px_rgba(23,23,23,0.05)] backdrop-blur-sm sm:py-14">
+                  <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary/10 text-secondary ring-1 ring-secondary/20">
+                    <svg
+                      aria-hidden="true"
+                      className="h-7 w-7"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M12 3v18M16.5 7H9.75a3.25 3.25 0 0 0 0 6.5h4.5a3.25 3.25 0 0 1 0 6.5H7.5"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="1.7"
+                      />
+                    </svg>
+                  </span>
+                  <h2 className="mt-4 text-lg font-bold text-foreground">
+                    Asigna un sueldo por hora
+                  </h2>
+                  <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-foreground/50">
+                    {selectedWorker.name} {selectedWorker.last_name} necesita un
+                    sueldo mayor a $0.00 antes de calcular sus pagos.
+                  </p>
+                  <Link
+                    className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-bold text-white shadow-lg shadow-primary/20 transition hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-primary/20"
+                    href="/workers"
+                  >
+                    Configurar sueldo
+                    <svg
+                      aria-hidden="true"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="m9 18 6-6-6-6"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                      />
+                    </svg>
+                  </Link>
+                </div>
+              )
             ) : (
               <div className="rounded-3xl border border-black/6 bg-white/80 px-6 py-14 text-center shadow-[0_12px_35px_rgba(23,23,23,0.045)] backdrop-blur-sm sm:py-16">
                 <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/15">
