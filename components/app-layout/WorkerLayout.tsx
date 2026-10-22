@@ -22,8 +22,13 @@ export default function WorkerLayout({
 }: WorkerLayoutProps) {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
-      <div className="pointer-events-none fixed -left-32 top-24 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
-      <div className="pointer-events-none fixed -right-32 bottom-20 h-96 w-96 rounded-full bg-secondary/15 blur-3xl" />
+      <div
+        className="pointer-events-none fixed inset-x-0 bottom-0 top-20"
+        style={{
+          background:
+            "radial-gradient(circle at 50% 42%, rgba(46, 167, 162, 0.12) 0%, rgba(46, 167, 162, 0.045) 26%, transparent 62%)",
+        }}
+      />
 
       <AppHeader companyName={companyName} userName={userName} />
 
