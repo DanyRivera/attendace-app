@@ -20,7 +20,7 @@ begin
    * Cierra periodos cuyo límite diario ya venció.
    *
    * El job puede ejecutarse segundos o minutos después,
-   * pero ended_at siempre se guarda exactamente a las 21:30
+   * pero ended_at siempre se guarda exactamente a las 22:30
    * de la fecha correspondiente.
    */
   update public.periods as expired_periods
@@ -28,7 +28,7 @@ begin
   from public.days as attendance_days
   cross join lateral (
     select (
-      attendance_days.work_date + time '21:30:00'
+      attendance_days.work_date + time '22:30:00'
     ) at time zone v_time_zone as window_end
   ) as attendance_window
   where attendance_days.id = expired_periods.day_id
@@ -53,7 +53,7 @@ from public, anon, authenticated;
 -- Crea o actualiza el job utilizando siempre el mismo nombre.
 select cron.schedule(
   'close-expired-attendance-periods',
-  '30 3 * * *',
+  '30 4 * * *',
   $job$
     select public.close_expired_attendance_periods();
   $job$

@@ -79,13 +79,13 @@ begin
   v_now := clock_timestamp();
   v_work_date := (v_now at time zone v_time_zone)::date;
 
-  -- Convierte las 07:00 y 21:30 locales a timestamptz.
+  -- Convierte las 07:00 y 22:30 locales a timestamptz.
   v_window_start := (
     v_work_date + time '07:00:00'
   ) at time zone v_time_zone;
 
   v_window_end := (
-    v_work_date + time '21:30:00'
+    v_work_date + time '22:30:00'
   ) at time zone v_time_zone;
 
   -- La validación ocurre en PostgreSQL, no solamente en el frontend.
@@ -96,19 +96,19 @@ begin
 
   if v_now >= v_window_end then
     raise exception
-      'El registro de asistencia finaliza a las 21:30';
+      'El registro de asistencia finaliza a las 22:30';
   end if;
 
   /*
    * Respaldo del job programado:
    * cierra silenciosamente periodos anteriores que sigan abiertos.
    *
-   * ended_at se guarda exactamente a las 21:30 de la fecha
+   * ended_at se guarda exactamente a las 22:30 de la fecha
    * correspondiente, aunque el registro actual ocurra días después.
    */
   update public.periods as previous_periods
   set ended_at = (
-    previous_days.work_date + time '21:30:00'
+    previous_days.work_date + time '22:30:00'
   ) at time zone v_time_zone
   from public.days as previous_days
   where previous_days.id = previous_periods.day_id
@@ -117,7 +117,7 @@ begin
     and previous_days.is_paid = false
     and previous_periods.ended_at is null
     and previous_periods.started_at < (
-      previous_days.work_date + time '21:30:00'
+      previous_days.work_date + time '22:30:00'
     ) at time zone v_time_zone;
 
   -- Busca un periodo abierto correspondiente al día actual.
