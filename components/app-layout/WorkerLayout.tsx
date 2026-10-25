@@ -2,6 +2,7 @@ import AppHeader from "@/components/app-layout/AppHeader";
 import BottomNav, {
   type BottomNavItem,
 } from "@/components/app-layout/BottomNav";
+import WorkerInactivityGuard from "@/components/app-layout/WorkerInactivityGuard";
 
 const workerNavItems: BottomNavItem[] = [
   { href: "/time", icon: "clock", label: "Checador" },
@@ -29,6 +30,8 @@ export default function WorkerLayout({
             "radial-gradient(circle at 50% 42%, rgba(46, 167, 162, 0.12) 0%, rgba(46, 167, 162, 0.045) 26%, transparent 62%)",
         }}
       />
+
+      <WorkerInactivityGuard />
 
       <AppHeader companyName={companyName} userName={userName} />
 

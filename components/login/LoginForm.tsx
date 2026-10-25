@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import FormField from "@/components/forms/FormField";
+import { resetWorkerActivityTimestamp } from "@/components/app-layout/WorkerInactivityGuard";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import SectionHeading from "@/components/forms/SectionHeading";
 import type { LoginField, LoginFormData } from "@/types/login";
@@ -68,6 +69,7 @@ export default function LoginForm() {
       if (res.role === "admin") {
         router.replace("/dashboard");
       } else {
+        resetWorkerActivityTimestamp();
         router.replace("/time");
       }
 
