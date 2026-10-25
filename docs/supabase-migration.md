@@ -315,7 +315,7 @@ create extension if not exists pg_cron;
 
 select cron.schedule(
   'close-expired-attendance-periods',
-  '30 4 * * *',
+  '0 4 * * *',
   $job$
     select public.close_expired_attendance_periods();
   $job$
@@ -330,7 +330,7 @@ Consideraciones:
 - La función debe ser idempotente.
 - `anon` y `authenticated` no deben poder ejecutar funciones internas de mantenimiento.
 
-En Time Check, `30 4 * * *` equivale a las 22:30 del día anterior en `America/Mexico_City` bajo las reglas horarias actuales. La función guarda `ended_at` exactamente a las 22:30 aunque el job inicie unos segundos después.
+En Time Check, `0 4 * * *` equivale a las 22:00 del día anterior en `America/Mexico_City` bajo las reglas horarias actuales. La función guarda `ended_at` exactamente a las 22:00 aunque el job inicie unos segundos después.
 
 ## 6. Reconstruir la base local desde cero
 
@@ -730,7 +730,7 @@ Migraciones:
   20260821031801_attendance_cron.sql
 Cron:
   close-expired-attendance-periods
-  30 4 * * *
+  0 4 * * *
 ```
 
 Este bloque no contiene Project Ref, claves, contraseñas ni URLs privadas de PostgreSQL.

@@ -19,7 +19,7 @@ type AttendanceTrackerProps = {
 };
 
 const REGISTRATION_START_MINUTES = 7 * 60;
-const REGISTRATION_END_MINUTES = 22 * 60 + 30;
+const REGISTRATION_END_MINUTES = 22 * 60;
 
 const registrationTimeFormatter = new Intl.DateTimeFormat("en-US", {
   hour: "2-digit",
@@ -212,7 +212,7 @@ export default function AttendanceTracker({ attendance }: AttendanceTrackerProps
           title={
             isWithinRegistrationWindow
               ? "Registrar hora"
-              : "Registro disponible de 7:00 a. m. a 10:30 p. m."
+              : "Registro disponible de 7:00 a. m. a 10:00 p. m."
           }
           type="button"
         >
